@@ -1,0 +1,23 @@
+{
+  "name": "@test5/checking-frontend",
+  "version": "0.0.0",
+  "private": true,
+  "description": "IHM de checking (brique verticale) : rapport de contrôle d'un produit, mis à jour en direct. Ne dépend que de l'API de checking.",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./src/styles.css"
+  },
+  "scripts": {
+    "api": "node ../tools/openapi-slice.mjs ../app-core/build/openapi/openapi.json /api/checking src/api/schema.ts",
+    "typecheck": "tsc --noEmit -p .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "openapi-fetch": "0.17.0"
+  },
+  "peerDependencies": {
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  }
+}

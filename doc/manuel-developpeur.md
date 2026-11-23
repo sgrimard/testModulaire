@@ -287,6 +287,22 @@ Exemple : `test4/checking-frontend`.
 5. **Tester** dans l'assemblage : `GET /ui/plugins` contient l'`id`, et le module est servi. Le
    contrat JavaScript n'est pas vérifié à la compilation : vérifiez aussi la page dans un navigateur.
 
+#### Variante React/TypeScript (test 5)
+
+Exemple : `test5/checking-frontend`. Le plug-in est un paquet npm à côté de son backend.
+
+1. `package.json` : `react` en `peerDependencies`, aucune dépendance vers `@test5/core-frontend`.
+   Script `"api"` qui appelle `tools/openapi-slice.mjs` avec le préfixe REST de son backend.
+2. `src/api/schema.ts` : généré par `npm run api`, à ne pas modifier. `src/api/client.ts` : client
+   typé (`openapi-fetch`) et abonnement SSE.
+3. `src/host.ts` : la forme du registre que le plug-in attend, avec des composants décrits comme
+   des fonctions `(props) => ReactNode` (et non `ComponentType`, trop strict pour cette comparaison).
+4. `src/index.ts` : exporte `xxxPlugin = { id, register: (registry: HostRegistry) => { … } }`.
+   `register` est une **propriété fléchée**, pour que TypeScript compare strictement son paramètre.
+5. Ajouter le plug-in à la liste de `desktop/src/renderer/main.tsx`, et son CSS (variables de l'hôte).
+6. Vérifier : `npm run typecheck` (contrat avec l'hôte), `npm test`, puis `npm run dev` dans un
+   navigateur.
+
 ### 4.7 Exposer un nouveau service
 
 Exemple : `test4/checking`.

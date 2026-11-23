@@ -1,0 +1,25 @@
+{
+  "name": "@test5/core-frontend",
+  "version": "0.0.0",
+  "private": true,
+  "description": "IHM de core-backend (brique verticale) : liste et formulaire produits pilotés par le schéma, registre de plug-ins.",
+  "type": "module",
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "scripts": {
+    "api": "node ../tools/openapi-slice.mjs ../app-core/build/openapi/openapi.json /api/products src/api/schema.ts",
+    "typecheck": "tsc --noEmit -p .",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "openapi-fetch": "0.17.0"
+  },
+  "peerDependencies": {
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1"
+  },
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./src/styles.css"
+  }
+}

@@ -9,6 +9,7 @@ une application (champs, traitements, calculs, écrans) sans modifier son noyau.
 | `test2` | Champs d'extension et spécialisation des traitements |
 | `test3` | Test 2 + règles des champs modifiables par une extension |
 | `test4` | Données et calcul extensibles (socle recommandé) |
+| `test5` | Test 4 avec une IHM React/TypeScript livrée dans Electron (Windows, Linux) |
 
 ## Documentation
 

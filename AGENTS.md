@@ -14,6 +14,7 @@ Chaque dossier `testN/` est un projet Gradle autonome (son propre `gradlew`) :
 | `test2` | Champs d'extension + spécialisation des traitements (`ProductValidator`, `QuoteStep`, `LabelFormatter`) | core-backend, ext-backend, core-frontend, ext-frontend |
 | `test3` | Test 2 + règles des champs modifiables (`FieldPolicy`) | idem test 2 |
 | `test4` | **Socle recommandé** : données extensibles + calcul extensible (`ProductExtension`, `ProductCheck`) | core-backend, ext-backend-1/2, checking, ext-checking-1/2/3, core-frontend, checking-frontend |
+| `test5` | Backend du test 4 ; IHM en paquets npm React/TypeScript, assemblée dans Electron (`desktop`) | idem test 4 + `core-frontend`, `checking-frontend`, `desktop` (npm) |
 
 Le choix entre ces modèles est expliqué dans `doc/architecture.md`. Pour un nouveau développement,
 partez du test 4 sauf demande contraire.
@@ -25,6 +26,9 @@ partez du test 4 sauf demande contraire.
 2. **Brique verticale** : un module `x-frontend` n'a qu'une dépendance de projet, son backend `x`.
    Un plug-in d'IHM ne dépend jamais de `core-frontend` ; il se déclare par
    `META-INF/ui-plugin.properties` et reçoit le registre JavaScript à l'exécution.
+   En TypeScript (test 5) : le paquet du plug-in n'importe rien de `core-frontend`, déclare
+   lui-même la forme du registre qu'il attend (`src/host.ts`), et ses types d'API sont générés
+   depuis le contrat OpenAPI de son seul backend (`npm run api`).
 3. **Données d'une autre extension = son API typée** (`ProductDto.shipping()`…), jamais sa table ni
    ses entités. Déclarer la dépendance Gradle vers cette extension.
 4. **Chaque module possède ses tables** (`src/main/resources/db/<module>/NNN_*.sql` + une
@@ -74,9 +78,13 @@ java -jar app/build/quarkus-app/quarkus-run.jar &
 ```
 
 Ports HTTP : test1 8080 ; test2 8080 / 8082 ; test3 8084 / 8086 ; test4 8088 (app), 8090 (app-ext1),
-8092 (app-core). Les applications écoutent sur `0.0.0.0`. Si le navigateur tourne dans un autre
+8092 (app-core) ; test5 8094 / 8096 / 8098 (base 5435), IHM Vite 5173. Les applications écoutent sur `0.0.0.0`. Si le navigateur tourne dans un autre
 conteneur, ouvrez `http://<nom-du-conteneur>:<port>`, pas `localhost`. Pour arrêter une application,
 tuez son PID précis : plusieurs tests utilisent la même ligne de commande `java -jar app/...`.
+
+IHM du test 5 (depuis `test5/`) : `npm install`, `npm run api`, `npm run typecheck`, `npm test`,
+`npm run dev` (navigateur, port 5173), `npm run dist` (Electron). Electron ne peut pas s'ouvrir dans
+un conteneur sans bibliothèques graphiques : tester l'IHM avec `npm run dev` ou `vite preview`.
 
 ## Vérifications avant de rendre la main
 

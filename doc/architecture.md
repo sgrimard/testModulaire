@@ -143,6 +143,20 @@ Si la validation échoue ou si la transaction est annulée, aucun événement n'
 rapport n'est recalculé. `checking` s'abonne à `core-backend` exactement comme un client externe,
 et recalcule sur un autre thread que celui qui a validé la transaction.
 
+### Test 5 : la même IHM en React/TypeScript, dans Electron
+
+Le test 5 reprend le backend du test 4 et réécrit l'IHM en paquets npm React/TypeScript, assemblés
+dans une application de bureau Electron (Windows, Linux). La règle des briques verticales tient :
+
+- chaque paquet d'IHM n'a pour types d'API que ceux de son backend, générés depuis le contrat
+  OpenAPI publié par Quarkus ;
+- le plug-in `checking-frontend` n'importe rien de `core-frontend` : il déclare la forme du registre
+  qu'il attend, et l'assemblage `desktop` ne compile que si l'IHM du noyau fournit cette forme.
+
+Le contrat d'IHM, vérifié seulement à l'exécution dans le test 4, est donc vérifié à la compilation
+dans le test 5. En contrepartie, l'ajout d'un plug-in passe par une nouvelle version de
+l'application de bureau : il n'y a pas de découverte à l'exécution.
+
 ## Comparaison
 
 Plus l'extension agit en profondeur sur le noyau, plus le contrat entre les deux doit être précis et
@@ -204,9 +218,12 @@ performance ni de charge n'a été faite.
 - **Versionnement des contrats.** Les SPI (`ProductExtension`, `FieldPolicy`, `ProductCheck`) et
   les API typées des extensions sont des contrats entre équipes. Leur compatibilité n'est ni
   versionnée ni vérifiée automatiquement.
-- **Contrat d'IHM vérifié seulement à l'exécution.** Avec les briques verticales, un plug-in d'IHM
-  ne dépend plus de l'IHM du noyau : le registre JavaScript et le descripteur sont un contrat que la
-  compilation ne vérifie pas. Seuls les tests d'assemblage le couvrent.
+- **Contrat d'IHM vérifié seulement à l'exécution (tests 2 à 4).** Avec les briques verticales, un
+  plug-in d'IHM ne dépend plus de l'IHM du noyau : le registre JavaScript et le descripteur sont un
+  contrat que la compilation ne vérifie pas. Le test 5 corrige ce point avec TypeScript.
+- **Application de bureau non testée en conditions réelles.** Le paquet Electron du test 5 est
+  construit, mais il n'a pas été lancé dans le conteneur de développement (pas de bibliothèques
+  graphiques) ; l'IHM a été vérifiée dans un navigateur.
 - **Dépendances entre extensions.** Dans le test 4, `ext-checking-3` dépend de deux extensions de
   données. Il faut une règle pour éviter qu'une extension finisse par dépendre de toutes les autres.
 - **Non couvert.** Sécurité et droits d'accès par extension, extensions chargées sans recompiler
@@ -226,6 +243,7 @@ démarrent un vrai PostgreSQL embarqué, sans Docker ; le test 1 n'a pas de base
 | 2 | `test2` | app (8080), app-core (8082) | `./gradlew test` |
 | 3 | `test3` | app (8084), app-core (8086) | `./gradlew test` |
 | 4 | `test4` | app (8088), app-ext1 (8090), app-core (8092) | `./gradlew test` |
+| 5 | `test5` | app (8094), app-ext1 (8096), app-core (8098) ; IHM Electron | `./gradlew test` puis `npm test` |
 
 Pour lancer une application des tests 2 à 4 localement : construire avec `./gradlew build installDist`,
 démarrer la base avec `pg-embedded/build/install/pg-embedded/bin/pg-embedded <port>` (5432 pour le

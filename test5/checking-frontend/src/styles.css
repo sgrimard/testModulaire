@@ -1,0 +1,21 @@
+/* Styles du plug-in checking : ils n'utilisent que les variables CSS de l'IHM hôte. */
+.check-card { border: 1px solid var(--line); border-radius: 8px; padding: .75rem; }
+.check-card header { display: flex; align-items: baseline; gap: .6rem; flex-wrap: wrap; margin-bottom: .5rem; }
+.check-card h3 { margin: 0; }
+.check-status { font-size: .75rem; font-weight: 600; padding: .1rem .45rem; border-radius: 999px; border: 1px solid currentColor; }
+.check-status.OK { color: #2e7d4f; }
+.check-status.WARNING { color: var(--warn); }
+.check-status.BLOCKING { color: var(--danger); }
+.check-card.BLOCKING { border-color: var(--danger); }
+.check-score { font-size: 1.4rem; font-weight: 600; font-variant-numeric: tabular-nums; }
+.check-score small { font-size: .8rem; color: var(--muted); font-weight: 400; }
+.check-card table { margin-bottom: .5rem; }
+.check-findings { list-style: none; margin: 0 0 .5rem; padding: 0; font-size: .88rem; }
+.check-findings li { display: flex; gap: .5rem; padding: .25rem 0; }
+.check-findings .sev { font-size: .72rem; font-weight: 600; min-width: 5.5rem; }
+.check-findings .sev.WARNING { color: var(--warn); }
+.check-findings .sev.BLOCKING { color: var(--danger); }
+.check-findings .penalty { margin-left: auto; color: var(--muted); font-variant-numeric: tabular-nums; }
+.check-meta { font-size: .78rem; color: var(--muted); margin: 0; }
+.check-card.flash { animation: check-flash 1.2s ease-out; }
+@keyframes check-flash { from { background: var(--accent-soft); } to { background: transparent; } }

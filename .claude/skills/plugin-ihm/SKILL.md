@@ -47,6 +47,18 @@ autre frontend. Le lien avec l'IHM du noyau est un contrat d'exécution :
    - Direct : un seul `EventSource` par plug-in, créé dans `register`, partagé par les sections ;
      ignorer une section qui n'est plus dans la page (`element.isConnected`).
 
+## Variante React/TypeScript (test 5)
+
+Dans `test5`, les IHM sont des paquets npm (`core-frontend`, `checking-frontend`) assemblés par
+`desktop` (Electron). Suivez `doc/manuel-developpeur.md`, section 4.6, « Variante React/TypeScript » :
+
+- le paquet du plug-in n'importe **rien** de `@test5/core-frontend` ; il déclare le registre attendu
+  dans `src/host.ts` (composants = fonctions `(props) => ReactNode`) ;
+- `register` est une propriété fléchée ; le plug-in est ajouté dans `desktop/src/renderer/main.tsx` ;
+- types d'API : `npm run api` (après `./gradlew :app-core:quarkusBuild`), jamais écrits à la main ;
+- vérifier avec `npm run typecheck` (qui contrôle le contrat avec l'hôte), `npm test`, puis
+  `npm run dev` ouvert sur `http://<nom-du-conteneur>:5173/`.
+
 ## Vérifier
 
 1. Test d'assemblage : `GET /ui/plugins` contient `<x>` et `GET /plugins/<x>/plugin.js` répond 200.

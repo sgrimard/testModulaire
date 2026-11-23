@@ -1,0 +1,33 @@
+{
+  "name": "test5-ui",
+  "private": true,
+  "description": "IHM React/TypeScript du test 5, assemblée dans une application Electron.",
+  "workspaces": [
+    "core-frontend",
+    "checking-frontend",
+    "desktop"
+  ],
+  "scripts": {
+    "api": "npm run api --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present",
+    "dev": "npm run dev -w @test5/desktop",
+    "build": "npm run build -w @test5/desktop",
+    "dist": "npm run dist -w @test5/desktop"
+  },
+  "devDependencies": {
+    "@testing-library/dom": "10.4.2",
+    "@testing-library/react": "16.3.3",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "jsdom": "31.0.1",
+    "openapi-typescript": "7.13.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "typescript": "5.9.3",
+    "vitest": "4.1.12"
+  },
+  "allowScripts": {
+    "electron-winstaller": false
+  }
+}

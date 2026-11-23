@@ -1,0 +1,57 @@
+{
+  "name": "@test5/desktop",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Assemblage de bureau du test 5 : IHM du noyau + plug-in checking, dans Electron. Vite regroupe tout le code du rendu : aucune dépendance n'est embarquée à l'exécution.",
+  "author": "testModulaire",
+  "main": "dist/main/main.js",
+  "desktopName": "catalogue-test5.desktop",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "typecheck": "tsc --noEmit -p . && tsc --noEmit -p tsconfig.main.json",
+    "build": "vite build && tsc -p tsconfig.main.json",
+    "start": "npm run build && electron .",
+    "preview": "vite preview --host 0.0.0.0",
+    "dist": "npm run build && electron-builder --linux AppImage --win zip"
+  },
+  "devDependencies": {
+    "@test5/checking-frontend": "0.0.0",
+    "@test5/core-frontend": "0.0.0",
+    "@types/node": "22.20.5",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@vitejs/plugin-react": "6.3.0",
+    "electron": "45.4.1",
+    "electron-builder": "26.18.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "vite": "8.3.8"
+  },
+  "build": {
+    "appId": "dev.testia.test5.desktop",
+    "productName": "Catalogue test5",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json"
+    ],
+    "linux": {
+      "target": "AppImage",
+      "category": "Office",
+      "executableName": "catalogue-test5",
+      "desktop": {
+        "entry": {
+          "StartupWMClass": "catalogue-test5"
+        }
+      }
+    },
+    "win": {
+      "target": "zip",
+      "signAndEditExecutable": false
+    },
+    "executableName": "catalogue-test5",
+    "artifactName": "catalogue-test5-${version}-${os}-${arch}.${ext}"
+  }
+}
