@@ -12,6 +12,7 @@ dependencies {
     implementation(enforcedPlatform("org.jetbrains.kotlin:kotlin-bom:2.4.10"))
     implementation(project(":server"))
     implementation(project(":client"))
+    implementation(project(":frontend"))
     implementation(project(":ext-one"))
     implementation(project(":ext-two"))
     testImplementation("io.quarkus:quarkus-junit")

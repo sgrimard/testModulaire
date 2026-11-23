@@ -7,4 +7,4 @@ pluginManagement {
 
 rootProject.name = "testModulaire"
 
-include("server", "client", "ext-one", "ext-two", "app", "app-core")
+include("server", "client", "ext-one", "ext-two", "frontend", "app", "app-core")

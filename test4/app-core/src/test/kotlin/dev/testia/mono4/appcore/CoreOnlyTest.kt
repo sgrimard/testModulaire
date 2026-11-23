@@ -11,6 +11,7 @@ import io.quarkus.test.common.WithTestResource
 import io.quarkus.test.junit.QuarkusTest
 import io.restassured.RestAssured.given
 import jakarta.inject.Inject
+import org.hamcrest.Matchers.containsString
 import org.hamcrest.Matchers.equalTo
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
@@ -59,5 +60,12 @@ class CoreOnlyTest {
     fun `rest endpoints`() {
         given().get("/api/products/extensions").then().statusCode(200).body("size()", equalTo(0))
         given().get("/api/checking/reports/424242").then().statusCode(404).body("code", equalTo("product-not-found"))
+    }
+
+    @Test
+    fun `ui of each brick is assembled at runtime`() {
+        given().get("/").then().statusCode(200).body(containsString("/core/app.js"))
+        given().get("/ui/plugins").then().statusCode(200).body("id", equalTo(listOf("checking")))
+        given().get("/plugins/checking/plugin.js").then().statusCode(200).body(containsString("export function register"))
     }
 }

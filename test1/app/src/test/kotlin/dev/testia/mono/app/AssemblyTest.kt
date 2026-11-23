@@ -6,12 +6,14 @@ import dev.testia.mono.server.ExtensionEvent
 import dev.testia.mono.server.ExtensionHandle
 import dev.testia.mono.server.UnknownExtensionException
 import io.quarkus.test.junit.QuarkusTest
+import io.restassured.RestAssured.given
 import jakarta.inject.Inject
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertNotNull
 import org.junit.jupiter.api.Assertions.assertNull
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
+import org.hamcrest.Matchers.containsString
 import java.util.concurrent.LinkedBlockingQueue
 import java.util.concurrent.TimeUnit
 
@@ -68,6 +70,12 @@ class AssemblyTest {
             assertEquals(listOf("incremented", "incremented", "threshold"), counterEvents.map { it.type })
             assertEquals("12", counterEvents.last().value)
         }
+    }
+
+    @Test
+    fun `generic ui is served with the assembly`() {
+        given().get("/").then().statusCode(200).body(containsString("/app.js"))
+        given().get("/app.js").then().statusCode(200).body(containsString("EventSource"))
     }
 
     /** S'abonne, attend SUBSCRIBED, exécute [action], puis renvoie les [expected] événements suivants. */
