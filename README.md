@@ -1,7 +1,7 @@
 # testModulaire
 
 Prototypes de monolithe modulaire Kotlin / Quarkus (tests 1 à 5) ou Spring Boot + Spring Modulith
-(test 6) / PostgreSQL : comment ajouter des fonctions à
+(tests 6 et 7) / PostgreSQL : comment ajouter des fonctions à
 une application (champs, traitements, calculs, écrans) sans modifier son noyau.
 
 | Dossier | Modèle |
@@ -12,6 +12,7 @@ une application (champs, traitements, calculs, écrans) sans modifier son noyau.
 | `test4` | Données et calcul extensibles (socle recommandé) |
 | `test5` | Test 4 avec une IHM React/TypeScript livrée dans Electron (Windows, Linux) |
 | `test6` | Test 5 sur Spring Boot + Spring Modulith : règles d'architecture vérifiées par un test |
+| `test7` | Test 3 sur Spring Boot + Spring Modulith |
 
 ## Documentation
 

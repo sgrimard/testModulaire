@@ -352,17 +352,18 @@ Exemple : `test4/app-ext1`.
    deux modes** (`Mode.entries.forEach`), ce qui est propre à cette combinaison : extensions
    découvertes, contributions présentes dans le rapport, plug-ins d'IHM servis.
 
-### 4.9 Variante Spring Boot + Spring Modulith (test 6)
+### 4.9 Variante Spring Boot + Spring Modulith (tests 6 et 7)
 
 Les recettes 4.1 à 4.8 s'appliquent avec ces équivalences :
 
 | Quarkus (tests 1 à 5) | Spring (test 6) |
 | --- | --- |
-| `META-INF/beans.xml` dans le module | rien : l'application scanne `dev.testia.mono6` |
+| `META-INF/beans.xml` dans le module | rien : l'application scanne `dev.testia.monoN` |
 | `@ApplicationScoped` | `@Component` (`@Service` pour un service, marqué `@Primary` s'il implémente un contrat aussi implémenté par son contrôleur) |
 | `Instance<Spi>` | `ObjectProvider<Spi>` (`orderedStream()`) |
 | Interface JAX-RS `XxxApi` + `@RegisterRestClient` | Interface `@HttpExchange` `XxxApi` ; `@RestController` qui l'implémente ; client `RestClients.create(url, XxxApi::class.java)` |
 | `Multi` | `Flux` |
+| `@DefaultBean` sur l'implémentation du noyau (remplacement, test 7) | Implémentation du noyau en `@Component` simple ; celle du plug-in en `@Component @Primary` |
 | Événement CDI observé après commit | `ApplicationEventPublisher.publishEvent` + `@TransactionalEventListener` |
 | `@QuarkusTest @WithTestResource(EmbeddedPostgresResource::class)` | `@SpringBootTest(webEnvironment = RANDOM_PORT) @ContextConfiguration(initializers = [EmbeddedPostgresInitializer::class])` |
 

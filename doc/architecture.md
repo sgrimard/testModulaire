@@ -176,6 +176,15 @@ transaction qui écrit, et le diffuse après : chaque rapport correspond exactem
 validé. Le registre des publications d'événements de Spring Modulith n'est pas utilisé, faute
 d'écouteur qui écrive des données. Le détail est dans `test6/README.md`.
 
+### Test 7 : le test 3 sur Spring Boot + Spring Modulith
+
+Le test 7 porte le test 3 (qui inclut le test 2) sur la même pile que le test 6. Un seul point de
+conception change : le remplacement d'un traitement du noyau. Le `@DefaultBean` de Quarkus devient
+un `@Primary` sur l'implémentation du plug-in. La vérification de Spring Modulith a aussi révélé une
+dépendance cachée : le plug-in réutilisait une fonction du service interne du noyau (`coreLabel()`),
+désormais publiée dans le SPI. Les règles de champs modifiables (`FieldPolicy`) et l'IHM JavaScript
+ne changent pas. Détail : `test7/README.md`.
+
 ## Comparaison
 
 Plus l'extension agit en profondeur sur le noyau, plus le contrat entre les deux doit être précis et
@@ -264,6 +273,7 @@ démarrent un vrai PostgreSQL embarqué, sans Docker ; le test 1 n'a pas de base
 | 4 | `test4` | app (8088), app-ext1 (8090), app-core (8092) | `./gradlew test` |
 | 5 | `test5` | app (8094), app-ext1 (8096), app-core (8098) ; IHM Electron | `./gradlew test` puis `npm test` |
 | 6 | `test6` | app (8100), app-ext1 (8102), app-core (8104) ; base 5436 ; IHM Electron | `./gradlew test` puis `npm test` |
+| 7 | `test7` | app (8106), app-core (8108) ; base 5437 | `./gradlew test` |
 
 Pour lancer une application des tests 2 à 4 localement : construire avec `./gradlew build installDist`,
 démarrer la base avec `pg-embedded/build/install/pg-embedded/bin/pg-embedded <port>` (5432 pour le
@@ -273,5 +283,6 @@ applications en même temps ; pour les tests 2 et 3, démarrer la seconde après
 
 L'IHM est servie à la racine de chaque application (`http://<hôte>:<port>/`).
 
-Test 6 : `java -jar app/build/libs/app.jar` après `./gradlew build installDist -x test`, base sur le
-port 5436 ; l'IHM se lance avec `npm run dev` comme au test 5.
+Tests 6 et 7 : `java -jar app/build/libs/app.jar` après `./gradlew build installDist -x test`, base
+sur le port 5436 (test 6) ou 5437 (test 7). L'IHM du test 6 se lance avec `npm run dev` comme au
+test 5 ; celle du test 7 est servie par l'application.
