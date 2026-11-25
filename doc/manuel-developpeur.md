@@ -352,6 +352,38 @@ Exemple : `test4/app-ext1`.
    deux modes** (`Mode.entries.forEach`), ce qui est propre à cette combinaison : extensions
    découvertes, contributions présentes dans le rapport, plug-ins d'IHM servis.
 
+### 4.9 Variante Spring Boot + Spring Modulith (test 6)
+
+Les recettes 4.1 à 4.8 s'appliquent avec ces équivalences :
+
+| Quarkus (tests 1 à 5) | Spring (test 6) |
+| --- | --- |
+| `META-INF/beans.xml` dans le module | rien : l'application scanne `dev.testia.mono6` |
+| `@ApplicationScoped` | `@Component` (`@Service` pour un service, marqué `@Primary` s'il implémente un contrat aussi implémenté par son contrôleur) |
+| `Instance<Spi>` | `ObjectProvider<Spi>` (`orderedStream()`) |
+| Interface JAX-RS `XxxApi` + `@RegisterRestClient` | Interface `@HttpExchange` `XxxApi` ; `@RestController` qui l'implémente ; client `RestClients.create(url, XxxApi::class.java)` |
+| `Multi` | `Flux` |
+| Événement CDI observé après commit | `ApplicationEventPublisher.publishEvent` + `@TransactionalEventListener` |
+| `@QuarkusTest @WithTestResource(EmbeddedPostgresResource::class)` | `@SpringBootTest(webEnvironment = RANDOM_PORT) @ContextConfiguration(initializers = [EmbeddedPostgresInitializer::class])` |
+
+Un nouveau module demande en plus :
+
+1. Un paquet `dev.testia.mono6.<module>` (sous-paquet direct : c'est ce qui en fait un module).
+2. `src/main/java/dev/testia/mono6/<module>/package-info.java` :
+
+   ```java
+   @org.springframework.modulith.ApplicationModule(
+       displayName = "Extension xxx (ext-backend-N)",
+       allowedDependencies = {"core::api", "core::spi"})
+   package dev.testia.mono6.xxx;
+   ```
+
+   Le code qui ne doit pas être utilisé par les autres modules va dans un sous-paquet `internal`.
+   Un sous-paquet à publier porte `@NamedInterface("nom")` dans son propre `package-info.java`.
+3. Dans chaque assemblage qui l'inclut, ajouter le module à la liste `EXPECTED` de
+   `ModularityTest`. Si `verify()` échoue, corriger la dépendance ou la déclarer ; ne pas
+   désactiver le test.
+
 ## 5. Avant de commiter
 
 ```bash

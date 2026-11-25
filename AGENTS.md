@@ -6,6 +6,7 @@ Instructions pour les agents IA qui travaillent dans ce dépôt. Les humains lis
 ## Le dépôt
 
 Prototypes de **monolithe modulaire** Kotlin 2.4 / Quarkus 3.31 / JDK 25 / Gradle 9.6 / PostgreSQL.
+Le test 6 remplace Quarkus par Spring Boot 4.2 + Spring Modulith 2.2 (voir plus bas).
 Chaque dossier `testN/` est un projet Gradle autonome (son propre `gradlew`) :
 
 | Dossier | Modèle | Modules principaux |
@@ -15,6 +16,7 @@ Chaque dossier `testN/` est un projet Gradle autonome (son propre `gradlew`) :
 | `test3` | Test 2 + règles des champs modifiables (`FieldPolicy`) | idem test 2 |
 | `test4` | **Socle recommandé** : données extensibles + calcul extensible (`ProductExtension`, `ProductCheck`) | core-backend, ext-backend-1/2, checking, ext-checking-1/2/3, core-frontend, checking-frontend |
 | `test5` | Backend du test 4 ; IHM en paquets npm React/TypeScript, assemblée dans Electron (`desktop`) | idem test 4 + `core-frontend`, `checking-frontend`, `desktop` (npm) |
+| `test6` | Test 5 sur Spring Boot + Spring Modulith ; dépendances entre modules vérifiées par `ModularityTest` | idem test 5 |
 
 Le choix entre ces modèles est expliqué dans `doc/architecture.md`. Pour un nouveau développement,
 partez du test 4 sauf demande contraire.
@@ -37,6 +39,22 @@ partez du test 4 sauf demande contraire.
    étend `XxxOperations`), avec les mêmes exceptions des deux côtés.
 6. **Tests dans les deux modes** : tout comportement visible par un client est testé en
    `Mode.DIRECT` et `Mode.REST`, dans chaque assemblage concerné, sur PostgreSQL embarqué.
+
+### Test 6 (Spring Boot + Spring Modulith)
+
+Mêmes règles, avec les équivalents Spring : `@Component`/`@Service` au lieu de `@ApplicationScoped`,
+`ObjectProvider<Spi>` au lieu de `Instance<Spi>`, contrat REST en interface `@HttpExchange`
+(implémentée par le `@RestController`, client par `productApiClient(url)` / `checkingApiClient(url)`),
+service direct `@Primary`, `Flux` au lieu de `Multi`. En plus :
+
+- un module Gradle = un sous-paquet direct de `dev.testia.mono6` = un module Spring Modulith ;
+- chaque module déclare dans `src/main/java/<paquet>/package-info.java` ses dépendances
+  autorisées (`@ApplicationModule(allowedDependencies = …)`) et ses sous-paquets publiés
+  (`@NamedInterface`). Les autres sous-paquets sont internes ;
+- un nouveau module ou une nouvelle dépendance se déclare là, **jamais** en affaiblissant
+  `ModularityTest` (liste `EXPECTED` mise à jour seulement quand un module est ajouté à l'assemblage).
+
+Détails et pièges : `test6/README.md`.
 
 Si une demande oblige à enfreindre une de ces règles, arrêtez-vous et expliquez le conflit au lieu
 de le contourner.
@@ -67,22 +85,23 @@ cd testN
 
 - JDK 25 requis. Dans le conteneur de développement :
   `export JAVA_HOME=~/.local/jdk/jdk-25.0.5+8 PATH=$JAVA_HOME/bin:$PATH`.
-- Les tests démarrent un PostgreSQL embarqué (pas de Docker) et Quarkus sur le port 8081.
+- Les tests démarrent un PostgreSQL embarqué (pas de Docker) et Quarkus sur le port 8081
+  (test 6 : Spring Boot sur un port aléatoire).
 - L'avertissement « bean discovery mode of 'all' » au build est attendu.
 
 Lancer une application pour la regarder :
 
 ```bash
 pg-embedded/build/install/pg-embedded/bin/pg-embedded <port-base> &   # 5432 test2, 5433 test3, 5434 test4
-java -jar app/build/quarkus-app/quarkus-run.jar &
+java -jar app/build/quarkus-app/quarkus-run.jar &   # test 6 : java -jar app/build/libs/app.jar
 ```
 
 Ports HTTP : test1 8080 ; test2 8080 / 8082 ; test3 8084 / 8086 ; test4 8088 (app), 8090 (app-ext1),
-8092 (app-core) ; test5 8094 / 8096 / 8098 (base 5435), IHM Vite 5173. Les applications écoutent sur `0.0.0.0`. Si le navigateur tourne dans un autre
+8092 (app-core) ; test5 8094 / 8096 / 8098 (base 5435) ; test6 8100 / 8102 / 8104 (base 5436) ; IHM Vite 5173. Les applications écoutent sur `0.0.0.0`. Si le navigateur tourne dans un autre
 conteneur, ouvrez `http://<nom-du-conteneur>:<port>`, pas `localhost`. Pour arrêter une application,
 tuez son PID précis : plusieurs tests utilisent la même ligne de commande `java -jar app/...`.
 
-IHM du test 5 (depuis `test5/`) : `npm install`, `npm run api`, `npm run typecheck`, `npm test`,
+IHM des tests 5 et 6 (depuis `test5/` ou `test6/`) : `npm install`, `npm run api`, `npm run typecheck`, `npm test`,
 `npm run dev` (navigateur, port 5173), `npm run dist` (Electron). Electron ne peut pas s'ouvrir dans
 un conteneur sans bibliothèques graphiques : tester l'IHM avec `npm run dev` ou `vite preview`.
 

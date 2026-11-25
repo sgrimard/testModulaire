@@ -157,6 +157,25 @@ Le contrat d'IHM, vérifié seulement à l'exécution dans le test 4, est donc v
 dans le test 5. En contrepartie, l'ajout d'un plug-in passe par une nouvelle version de
 l'application de bureau : il n'y a pas de découverte à l'exécution.
 
+### Test 6 : le test 5 sur Spring Boot + Spring Modulith
+
+Le test 6 garde le découpage, les contrats et l'IHM du test 5, et remplace Quarkus par Spring Boot
+4.2 et Spring Modulith 2.2. Chaque module Gradle devient un module Spring Modulith (un sous-paquet
+direct de l'application). Chaque module déclare ses dépendances autorisées et ses paquets publiés
+(`api`, `spi`, `rest`) ; le reste est interne.
+
+L'apport principal est la vérification : un test (`ApplicationModules.verify()`) échoue si un module
+crée un cycle, utilise une dépendance non déclarée ou importe un paquet interne d'un autre module.
+Dans les tests 1 à 5, ces règles reposaient sur la relecture et sur les dépendances Gradle, qui ne
+voient que les modules entiers. Le même test produit les diagrammes des modules.
+
+Les autres changements sont des équivalences : beans Spring découverts par `ObjectProvider`, contrats
+REST en interfaces `@HttpExchange` partagées par le contrôleur et le client, flux Reactor, événement
+Spring entre `core` et `checking`. `checking` calcule le rapport juste avant le commit, dans la
+transaction qui écrit, et le diffuse après : chaque rapport correspond exactement à un changement
+validé. Le registre des publications d'événements de Spring Modulith n'est pas utilisé, faute
+d'écouteur qui écrive des données. Le détail est dans `test6/README.md`.
+
 ## Comparaison
 
 Plus l'extension agit en profondeur sur le noyau, plus le contrat entre les deux doit être précis et
@@ -244,6 +263,7 @@ démarrent un vrai PostgreSQL embarqué, sans Docker ; le test 1 n'a pas de base
 | 3 | `test3` | app (8084), app-core (8086) | `./gradlew test` |
 | 4 | `test4` | app (8088), app-ext1 (8090), app-core (8092) | `./gradlew test` |
 | 5 | `test5` | app (8094), app-ext1 (8096), app-core (8098) ; IHM Electron | `./gradlew test` puis `npm test` |
+| 6 | `test6` | app (8100), app-ext1 (8102), app-core (8104) ; base 5436 ; IHM Electron | `./gradlew test` puis `npm test` |
 
 Pour lancer une application des tests 2 à 4 localement : construire avec `./gradlew build installDist`,
 démarrer la base avec `pg-embedded/build/install/pg-embedded/bin/pg-embedded <port>` (5432 pour le
@@ -252,3 +272,6 @@ test 2, 5433 pour le test 3, 5434 pour le test 4), puis l'exécutable
 applications en même temps ; pour les tests 2 et 3, démarrer la seconde après la première.
 
 L'IHM est servie à la racine de chaque application (`http://<hôte>:<port>/`).
+
+Test 6 : `java -jar app/build/libs/app.jar` après `./gradlew build installDist -x test`, base sur le
+port 5436 ; l'IHM se lance avec `npm run dev` comme au test 5.
