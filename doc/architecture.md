@@ -185,6 +185,9 @@ dépendance cachée : le plug-in réutilisait une fonction du service interne du
 désormais publiée dans le SPI. Les règles de champs modifiables (`FieldPolicy`) et l'IHM JavaScript
 ne changent pas. Détail : `test7/README.md`.
 
+La comparaison du code à écrire avec chaque framework, écart par écart, est dans
+`doc/comparaison-quarkus-spring.md`.
+
 ## Comparaison
 
 Plus l'extension agit en profondeur sur le noyau, plus le contrat entre les deux doit être précis et

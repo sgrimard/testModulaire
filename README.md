@@ -18,6 +18,8 @@ une application (champs, traitements, calculs, écrans) sans modifier son noyau.
 
 - [Note d'architecture](doc/architecture.md) : quel modèle choisir, comparaison, risques.
 - [Manuel du développeur](doc/manuel-developpeur.md) : règles et recettes pour écrire les modules.
+- [Quarkus ou Spring Modulith](doc/comparaison-quarkus-spring.md) : le code à écrire avec chaque
+  framework, écart par écart (tests 3/7 et 5/6).
 - [Instructions pour l'IA](doc/instructions-ia.md) : `AGENTS.md`, `CLAUDE.md` et les skills de
   `.claude/skills/`.
 
